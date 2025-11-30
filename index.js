@@ -1,0 +1,51 @@
+const { createClient } = require('bedrock-protocol');
+
+let client = null;
+let isOnline = false; // status bot di server
+
+function joinServer() {
+  console.log("Bot akan masuk server sekarang...");
+
+  client = createClient({
+    host: 'buburayam123.aternos.me',
+    port: 40635,
+    username: 'BotTAIK',
+    offline: false
+  });
+
+  // Kalau berhasil spawn
+  client.on('spawn', () => {
+    console.log("Bot sudah masuk server!");
+    isOnline = true;
+
+    // Setelah 1 menit, bot keluar
+    setTimeout(() => {
+      leaveServer();
+    }, 60 * 1000);
+  });
+
+  client.on('disconnect', () => {
+    isOnline = false;
+  });
+
+  client.on('error', () => {});
+}
+
+function leaveServer() {
+  if (!client || !isOnline) return;
+
+  console.log("Bot akan keluar server sekarang...");
+  isOnline = false;
+
+  try {
+    client.disconnect();
+  } catch (e) {}
+
+  // Setelah 1 menit keluar → masuk lagi
+  setTimeout(() => {
+    joinServer();
+  }, 60 * 1000);
+}
+
+// Start pertama
+joinServer();
