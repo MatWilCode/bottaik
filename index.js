@@ -1,51 +1,54 @@
 const { createClient } = require('bedrock-protocol');
 
-let client = null;
-let isOnline = false; // status bot di server
+let client;
+let nightLoop;
 
-function joinServer() {
-  console.log("Bot akan masuk server sekarang...");
-
+function connectBot() {
   client = createClient({
-    host: 'buburayam123.aternos.me',
-    port: 40635,
-    username: 'BotTAIK',
-    offline: false
+    host: 'buburayam123.aternos.me', // ganti dengan servermu
+    port: 40635,                     // ganti port servermu
+    username: 'BotNight',            // nama bot
+    offline: false                     // pakai true kalau mau nama custom
   });
 
-  // Kalau berhasil spawn
   client.on('spawn', () => {
-    console.log("Bot sudah masuk server!");
-    isOnline = true;
+    console.log('Bot sudah masuk server!');
 
-    // Setelah 1 menit, bot keluar
-    setTimeout(() => {
-      leaveServer();
-    }, 60 * 1000);
+    checkTime();
   });
 
-  client.on('disconnect', () => {
-    isOnline = false;
+  client.on('disconnect', (packet) => {
+    console.log('Bot keluar server:', packet.reason);
+    clearTimeout(nightLoop); // hentikan loop kalau disconnect
+    setTimeout(connectBot, 60000); // reconnect 1 menit
   });
 
-  client.on('error', () => {});
+  client.on('error', (err) => {
+    console.error('Error client:', err);
+  });
 }
 
-function leaveServer() {
-  if (!client || !isOnline) return;
+// Fungsi cek waktu malam/pagi (misal malam 18:00-06:00)
+function checkTime() {
+  const date = new Date();
+  const hour = date.getHours();
 
-  console.log("Bot akan keluar server sekarang...");
-  isOnline = false;
+  if (hour >= 18 || hour < 6) {
+    console.log('Malam detected: Bot akan keluar-masuk tiap 1 menit');
 
-  try {
-    client.disconnect();
-  } catch (e) {}
+    // Loop keluar-masuk
+    nightLoop = setInterval(() => {
+      console.log('Bot keluar server...');
+      client.close(); // keluar server
 
-  // Setelah 1 menit keluar → masuk lagi
-  setTimeout(() => {
-    joinServer();
-  }, 60 * 1000);
+      setTimeout(() => {
+        console.log('Bot masuk server lagi...');
+        connectBot(); // masuk lagi
+      }, 10000); // masuk lagi 10 detik setelah keluar
+    }, 60000); // setiap 1 menit
+  } else {
+    console.log('Pagi detected: Bot tetap di server');
+  }
 }
 
-// Start pertama
-joinServer();
+connectBot();
