@@ -1,0 +1,19 @@
+{
+  "name": "mcproject",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.13.2",
+    "bedrock-protocol": "^3.51.0",
+    "jsonwebtoken": "^9.0.2",
+    "prismarine-auth": "^1.1.2",
+    "punycode.js": "^2.3.1"
+  },
+  "description": ""
+}
