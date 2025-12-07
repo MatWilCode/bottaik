@@ -13,11 +13,6 @@ function joinServer() {
     offline: false
   });
 
-  // Event saat mencoba connect
-  client.on('connect', () => {
-    console.log("Bot mencoba connect...");
-  });
-
   // Kalau berhasil spawn
   client.on('spawn', () => {
     console.log("Bot sudah masuk server!");
@@ -29,16 +24,11 @@ function joinServer() {
     }, 60 * 1000);
   });
 
-  // Event disconnect
-  client.on('disconnect', (reason) => {
-    console.log("Bot disconnect:", reason);
+  client.on('disconnect', () => {
     isOnline = false;
   });
 
-  // Event error
-  client.on('error', (err) => {
-    console.log("Bot error:", err);
-  });
+  client.on('error', () => {});
 }
 
 function leaveServer() {
